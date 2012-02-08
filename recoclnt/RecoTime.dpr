@@ -4,8 +4,6 @@ uses
   Forms,
   Main in 'Main.pas' {frmRecoclnt};
 
-{$R *.res}
-
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;

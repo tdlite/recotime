@@ -14,6 +14,7 @@ object frmRecoclnt: TfrmRecoclnt
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -999,6 +1000,7 @@ object frmRecoclnt: TfrmRecoclnt
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000000000}
+    Transparent = True
   end
   object lblComment: TStaticText
     Left = 8
@@ -1024,6 +1026,7 @@ object frmRecoclnt: TfrmRecoclnt
     Font.Height = -12
     Font.Name = 'Tahoma'
     Font.Style = []
+    MaxLength = 1024
     ParentFont = False
     TabOrder = 1
   end
@@ -1040,6 +1043,7 @@ object frmRecoclnt: TfrmRecoclnt
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 2
+    OnClick = btnSendClick
   end
   object lblEntry: TStaticText
     Left = 55
@@ -1047,7 +1051,6 @@ object frmRecoclnt: TfrmRecoclnt
     Width = 473
     Height = 38
     AutoSize = False
-    Caption = 'n/a'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
