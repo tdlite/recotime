@@ -3,6 +3,8 @@ program RecoTime;
 uses
   Forms,
   Main in 'Main.pas' {frmRecoclnt};
+  
+{$R *.res}
 
 begin
   Application.Initialize;
