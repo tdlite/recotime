@@ -133,6 +133,7 @@ begin
     if (FSrvParam.Database = '') then
     begin
       FWriteLog('Database name is not specified');
+      Synchronize(FTerminate);
       Exit;
     end;
     { GET_LDAPINFO }
