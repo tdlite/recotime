@@ -92,6 +92,12 @@ implementation
 
 procedure TfrmRecoclnt.btnSendClick(Sender: TObject);
 begin
+  if (Trim(txtComment.Lines.Text) = '') then
+  begin
+    MessageBox(Self.Handle, 'Поле комментария не может быть пустым.',
+      'Уведомление', 64);
+    Exit;
+  end;
   RecoThread := TRecoThread.Create(True);
   RecoThread.FreeOnTerminate := True;
   RecoThread.SetComment(txtComment.Lines.Text);
