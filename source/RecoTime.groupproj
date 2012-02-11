@@ -4,9 +4,9 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
-    <Projects Include="recoalrt\recoalrt.dproj" />
-    <Projects Include="recoclnt\recoclnt.dproj" />
-    <Projects Include="recosrvc\recosrvc.dproj" />
+    <Projects Include="recoalrt\RecoAlrt.dproj" />
+    <Projects Include="recoclnt\RecoClnt.dproj" />
+    <Projects Include="recosrvc\RecoSrvc.dproj" />
   </ItemGroup>
   <ProjectExtensions>
     <Borland.Personality>Default.Personality</Borland.Personality>
@@ -14,41 +14,41 @@
     <BorlandProject>
   <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
   </ProjectExtensions>
-  <Target Name="recoalrt">
-    <MSBuild Projects="recoalrt\recoalrt.dproj" Targets="" />
+  <Target Name="RecoAlrt">
+    <MSBuild Projects="recoalrt\RecoAlrt.dproj" Targets="" />
   </Target>
-  <Target Name="recoalrt:Clean">
-    <MSBuild Projects="recoalrt\recoalrt.dproj" Targets="Clean" />
+  <Target Name="RecoAlrt:Clean">
+    <MSBuild Projects="recoalrt\RecoAlrt.dproj" Targets="Clean" />
   </Target>
-  <Target Name="recoalrt:Make">
-    <MSBuild Projects="recoalrt\recoalrt.dproj" Targets="Make" />
+  <Target Name="RecoAlrt:Make">
+    <MSBuild Projects="recoalrt\RecoAlrt.dproj" Targets="Make" />
   </Target>
-  <Target Name="recoclnt">
-    <MSBuild Projects="recoclnt\recoclnt.dproj" Targets="" />
+  <Target Name="RecoClnt">
+    <MSBuild Projects="recoclnt\RecoClnt.dproj" Targets="" />
   </Target>
-  <Target Name="recoclnt:Clean">
-    <MSBuild Projects="recoclnt\recoclnt.dproj" Targets="Clean" />
+  <Target Name="RecoClnt:Clean">
+    <MSBuild Projects="recoclnt\RecoClnt.dproj" Targets="Clean" />
   </Target>
-  <Target Name="recoclnt:Make">
-    <MSBuild Projects="recoclnt\recoclnt.dproj" Targets="Make" />
+  <Target Name="RecoClnt:Make">
+    <MSBuild Projects="recoclnt\RecoClnt.dproj" Targets="Make" />
   </Target>
-  <Target Name="recosrvc">
-    <MSBuild Projects="recosrvc\recosrvc.dproj" Targets="" />
+  <Target Name="RecoSrvc">
+    <MSBuild Projects="recosrvc\RecoSrvc.dproj" Targets="" />
   </Target>
-  <Target Name="recosrvc:Clean">
-    <MSBuild Projects="recosrvc\recosrvc.dproj" Targets="Clean" />
+  <Target Name="RecoSrvc:Clean">
+    <MSBuild Projects="recosrvc\RecoSrvc.dproj" Targets="Clean" />
   </Target>
-  <Target Name="recosrvc:Make">
-    <MSBuild Projects="recosrvc\recosrvc.dproj" Targets="Make" />
+  <Target Name="RecoSrvc:Make">
+    <MSBuild Projects="recosrvc\RecoSrvc.dproj" Targets="Make" />
   </Target>
   <Target Name="Build">
-    <CallTarget Targets="recoalrt;recoclnt;recosrvc" />
+    <CallTarget Targets="RecoAlrt;RecoClnt;RecoSrvc" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="recoalrt:Clean;recoclnt:Clean;recosrvc:Clean" />
+    <CallTarget Targets="RecoAlrt:Clean;RecoClnt:Clean;RecoSrvc:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="recoalrt:Make;recoclnt:Make;recosrvc:Make" />
+    <CallTarget Targets="RecoAlrt:Make;RecoClnt:Make;RecoSrvc:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>
