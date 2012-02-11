@@ -1,3 +1,4 @@
+# Delphi Files
 __history
 *.db
 *.exe
@@ -5,3 +6,7 @@ __history
 *.dcr
 *.local
 *.identcache
+
+# WiX Files
+*.wixobj
+*.wixpdb
