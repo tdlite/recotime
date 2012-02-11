@@ -1,12 +1,12 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{ead55c15-cb1f-4452-84d1-212f4f786b12}</ProjectGuid>
+    <ProjectGuid>{6f887182-3846-4192-94bc-65680d7efed4}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
-    <Projects Include="recoalrt\RecoTime.dproj" />
-    <Projects Include="recoclnt\RecoTime.dproj" />
-    <Projects Include="recosrvc\RecoTime.dproj" />
+    <Projects Include="recoalrt\recoalrt.dproj" />
+    <Projects Include="recoclnt\recoclnt.dproj" />
+    <Projects Include="recosrvc\recosrvc.dproj" />
   </ItemGroup>
   <ProjectExtensions>
     <Borland.Personality>Default.Personality</Borland.Personality>
@@ -14,41 +14,41 @@
     <BorlandProject>
   <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
   </ProjectExtensions>
-  <Target Name="RecoTime">
-    <MSBuild Projects="recoalrt\RecoTime.dproj" Targets="" />
+  <Target Name="recoalrt">
+    <MSBuild Projects="recoalrt\recoalrt.dproj" Targets="" />
   </Target>
-  <Target Name="RecoTime:Clean">
-    <MSBuild Projects="recoalrt\RecoTime.dproj" Targets="Clean" />
+  <Target Name="recoalrt:Clean">
+    <MSBuild Projects="recoalrt\recoalrt.dproj" Targets="Clean" />
   </Target>
-  <Target Name="RecoTime:Make">
-    <MSBuild Projects="recoalrt\RecoTime.dproj" Targets="Make" />
+  <Target Name="recoalrt:Make">
+    <MSBuild Projects="recoalrt\recoalrt.dproj" Targets="Make" />
   </Target>
-  <Target Name="RecoTime">
-    <MSBuild Projects="recoclnt\RecoTime.dproj" Targets="" />
+  <Target Name="recoclnt">
+    <MSBuild Projects="recoclnt\recoclnt.dproj" Targets="" />
   </Target>
-  <Target Name="RecoTime:Clean">
-    <MSBuild Projects="recoclnt\RecoTime.dproj" Targets="Clean" />
+  <Target Name="recoclnt:Clean">
+    <MSBuild Projects="recoclnt\recoclnt.dproj" Targets="Clean" />
   </Target>
-  <Target Name="RecoTime:Make">
-    <MSBuild Projects="recoclnt\RecoTime.dproj" Targets="Make" />
+  <Target Name="recoclnt:Make">
+    <MSBuild Projects="recoclnt\recoclnt.dproj" Targets="Make" />
   </Target>
-  <Target Name="RecoTime">
-    <MSBuild Projects="recosrvc\RecoTime.dproj" Targets="" />
+  <Target Name="recosrvc">
+    <MSBuild Projects="recosrvc\recosrvc.dproj" Targets="" />
   </Target>
-  <Target Name="RecoTime:Clean">
-    <MSBuild Projects="recosrvc\RecoTime.dproj" Targets="Clean" />
+  <Target Name="recosrvc:Clean">
+    <MSBuild Projects="recosrvc\recosrvc.dproj" Targets="Clean" />
   </Target>
-  <Target Name="RecoTime:Make">
-    <MSBuild Projects="recosrvc\RecoTime.dproj" Targets="Make" />
+  <Target Name="recosrvc:Make">
+    <MSBuild Projects="recosrvc\recosrvc.dproj" Targets="Make" />
   </Target>
   <Target Name="Build">
-    <CallTarget Targets="RecoTime;RecoTime;RecoTime" />
+    <CallTarget Targets="recoalrt;recoclnt;recosrvc" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="RecoTime:Clean;RecoTime:Clean;RecoTime:Clean" />
+    <CallTarget Targets="recoalrt:Clean;recoclnt:Clean;recosrvc:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="RecoTime:Make;RecoTime:Make;RecoTime:Make" />
+    <CallTarget Targets="recoalrt:Make;recoclnt:Make;recosrvc:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>
