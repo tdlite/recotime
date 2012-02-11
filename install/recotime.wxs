@@ -1,0 +1,37 @@
+<?xml version='1.0'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <Product Id='DFBDC7AF-FE13-4D1F-8A59-5D73FD791A9A' Name='RecoTime v0.1' 
+    Language='1033' Version='0.1.0.0' Manufacturer='Renaissance Insurance'
+    UpgradeCode='FD4DD79C-FE15-4212-A56C-BD8DC2BA9730'>
+  <Package Description='RecoTime Installer' Manufacturer='Renaissance Insurance'
+    InstallerVersion='200' Languages='1033' Compressed='yes' />
+  <Media Id='1' Cabinet='data.cab' EmbedCab='yes' />
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='SystemFolder' Name='System32'>
+        <Directory Id='RecoTimeFolder' Name='recotime'>
+          <Component Id="RecoTime" Guid='D8BCB3D0-8369-438F-82DA-117CD7B45117'>
+            <File Id="recosrvc.exe" Name="recosrvc.exe"
+              Source="../build/recosrvc.exe" KeyPath="yes"/>
+            <File Id="recoalrt.exe" Name="recoalrt.exe"
+              Source="../build/recoalrt.exe" KeyPath="no"/>
+            <File Id="recoclnt.exe" Name="recoclnt.exe"
+              Source="../build/recoclnt.exe" KeyPath="no"/>
+            <File Id="recotime.ini" Name="recotime.ini"
+              Source="../build/recotime.ini" KeyPath="no"/>
+            <File Id="fbclient.dll" Name="fbclient.dll"
+              Source="../build/fbclient.dll" KeyPath="no"/>             
+            <ServiceInstall Id="InstallService" Name="recosrvc" DisplayName="RecoTime Service"
+              Type="ownProcess" Start="auto" ErrorControl="normal" 
+              Description="Time Attendance System" Account="LocalSystem" />
+            <ServiceControl Id="StartService"
+              Name="recosrvc" Start="install" Wait="no" />
+            <ServiceControl Id="ControlService" Start="install" Stop="both" Remove="uninstall" Name="recosrvc" Wait="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+    <Feature Id='RecoTimeFeature' Title='Installing all components of RecoTime' Level='1'>
+      <ComponentRef Id='RecoTime' />
+    </Feature>
+  </Product>
+</Wix>
