@@ -220,6 +220,11 @@ var
   FText: TIdText;
 begin
   try
+    if (ATo = '') then
+    begin
+      FWriteLog('Recipient address is not specified');
+      Exit;
+    end;  
     FMessage := TIdMessage.Create(nil);
     FMessage.OnInitializeISO := FOnInitializeISO;
     FMessage.From.Address := AFrom;
