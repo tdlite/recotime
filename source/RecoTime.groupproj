@@ -1,0 +1,54 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{ead55c15-cb1f-4452-84d1-212f4f786b12}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="recoalrt\RecoTime.dproj" />
+    <Projects Include="recoclnt\RecoTime.dproj" />
+    <Projects Include="recosrvc\RecoTime.dproj" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+  <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="RecoTime">
+    <MSBuild Projects="recoalrt\RecoTime.dproj" Targets="" />
+  </Target>
+  <Target Name="RecoTime:Clean">
+    <MSBuild Projects="recoalrt\RecoTime.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="RecoTime:Make">
+    <MSBuild Projects="recoalrt\RecoTime.dproj" Targets="Make" />
+  </Target>
+  <Target Name="RecoTime">
+    <MSBuild Projects="recoclnt\RecoTime.dproj" Targets="" />
+  </Target>
+  <Target Name="RecoTime:Clean">
+    <MSBuild Projects="recoclnt\RecoTime.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="RecoTime:Make">
+    <MSBuild Projects="recoclnt\RecoTime.dproj" Targets="Make" />
+  </Target>
+  <Target Name="RecoTime">
+    <MSBuild Projects="recosrvc\RecoTime.dproj" Targets="" />
+  </Target>
+  <Target Name="RecoTime:Clean">
+    <MSBuild Projects="recosrvc\RecoTime.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="RecoTime:Make">
+    <MSBuild Projects="recosrvc\RecoTime.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="RecoTime;RecoTime;RecoTime" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="RecoTime:Clean;RecoTime:Clean;RecoTime:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="RecoTime:Make;RecoTime:Make;RecoTime:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>
