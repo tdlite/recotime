@@ -1037,6 +1037,7 @@ object frmRecoclnt: TfrmRecoclnt
     Width = 105
     Height = 41
     Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
+    Default = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
