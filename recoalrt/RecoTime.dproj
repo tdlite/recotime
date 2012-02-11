@@ -35,4 +35,7 @@
     </DelphiCompile>
     <DCCReference Include="ActiveDs_TLB.pas" />
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>move recotime.exe ..\build\recoalrt.exe</PostBuildEvent>
+  </PropertyGroup>  
 </Project>

@@ -38,4 +38,7 @@
       <Form>frmRecoclnt</Form>
     </DCCReference>
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>move recotime.exe ..\build\recoclnt.exe</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -40,4 +40,7 @@
     <DCCReference Include="RecoTime_TLB.pas" />
     <DCCReference Include="SensEvents_TLB.pas" />
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>move recotime.exe ..\build\recosrvc.exe</PostBuildEvent>
+  </PropertyGroup>  
 </Project>
