@@ -1,15 +1,15 @@
 <?xml version='1.0'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-  <Product Id='DFBDC7AF-FE13-4D1F-8A59-5D73FD791A9A' Name='RecoTime v0.1' 
-    Language='1033' Version='0.1.0.0' Manufacturer='Renaissance Insurance'
-    UpgradeCode='FD4DD79C-FE15-4212-A56C-BD8DC2BA9730'>
+  <Product Id='BBB997AA-B468-4F0D-817E-0AB13F4B732F' Name='RecoTime' 
+    Language='1033' Version='1.0.0.0' Manufacturer='Renaissance Insurance'
+    UpgradeCode='C48F0D13-7582-4EDA-93F6-B8933219CC80'>
   <Package Description='RecoTime Installer' Manufacturer='Renaissance Insurance'
     InstallerVersion='200' Languages='1033' Compressed='yes' />
   <Media Id='1' Cabinet='data.cab' EmbedCab='yes' />
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='SystemFolder' Name='System32'>
         <Directory Id='RecoTimeFolder' Name='recotime'>
-          <Component Id="RecoTime" Guid='D8BCB3D0-8369-438F-82DA-117CD7B45117'>
+          <Component Id="RecoTime" Guid='EA1C7534-E621-4210-B208-3A59E30035D3'>
             <File Id="recosrvc.exe" Name="recosrvc.exe"
               Source="../build/recosrvc.exe" KeyPath="yes"/>
             <File Id="recoalrt.exe" Name="recoalrt.exe"
