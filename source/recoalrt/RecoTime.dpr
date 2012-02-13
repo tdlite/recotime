@@ -29,6 +29,7 @@ type
     FullName: string;
     CityName: string;
     Email: string;
+    StartTime: string;
   end;
 
 type
@@ -56,6 +57,7 @@ type
       procedure FRunExec;
       procedure FOnInitializeISO(var ATransferHeader: TTransfer;
         var AHeaderEncoding: Char; var ACharSet: string);
+      function FGetTime(ATime: string): TDateTime;
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
       function FGetUserName: string;
       function FGetSrvParam: TSrvParam;
@@ -127,6 +129,7 @@ begin
     FUIBQuery.Execute;
     FUserInfo.UserID := FUIBQuery.Fields.ByNameAsInteger['userid'];
     FUserInfo.Email := FUIBQuery.Fields.ByNameAsString['email'];
+    FUserInfo.StartTime := FUIBQuery.Fields.ByNameAsString['starttime'];
     FUIBQuery.Close(etmCommit);
     { CHECK_ENTRY }
     FUIBQuery.BuildStoredProc('CHECK_ENTRY', False);
@@ -136,7 +139,7 @@ begin
     FIsExistEntry := FUIBQuery.Fields.ByNameAsBoolean['exist'];
     FUIBQuery.Close(etmCommit);
     { AFTER TIME }    
-    if ((Time > StrToTime('9:30')) and (not FIsExistEntry)) then
+    if ((Time > FGetTime(FUserInfo.StartTime)) and (not FIsExistEntry)) then
     begin
       { RUNEXEC }    
       FRunExec;
@@ -174,46 +177,6 @@ begin
   end;
   FADUserInfo := nil;
   FADSystemInfo := nil;
-end;
-
-function TRecoTime.FGetSrvParam: TSrvParam;
-var
-  FIniFile: TIniFile;
-begin
-  try
-    FIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + PARAM_FILE);
-    Result.Server := FIniFile.ReadString('general', 'server', 'localhost');
-    Result.Database := FIniFile.ReadString('general', 'database', '');
-    Result.Username := FIniFile.ReadString('general', 'username', '');
-    Result.Password := FIniFile.ReadString('general', 'password', '');
-    FIniFile.Free;
-  except
-    on E: Exception do
-    FWriteLog(E.Message);
-  end;
-end;
-
-function TRecoTime.FGetUserName: string;
-var
-  FUserName: array[0..255] of Char;
-  FUserSize: Cardinal;
-begin
-  FUserSize := SizeOf(FUserName);
-  Windows.GetUserName(@FUserName, FUserSize);
-  Result := Trim(FUserName);
-end;
-
-function TRecoTime.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
-begin
-  Result := ATemplate;
-  Result := StringReplace(Result, '%USERNAME%', AUserInfo.UserName,
-  [rfReplaceAll, rfIgnoreCase]);
-  Result := StringReplace(Result, '%FULLNAME%', AUserInfo.FullName,
-  [rfReplaceAll, rfIgnoreCase]);
-  Result := StringReplace(Result, '%CITYNAME%', AUserInfo.CityName,
-  [rfReplaceAll, rfIgnoreCase]);
-  Result := StringReplace(Result, '%EVENTTIME%',
-  FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
 end;
 
 procedure TRecoTime.FRunExec;
@@ -277,6 +240,54 @@ begin
     FSMTP.Free;
     FText.Free;    
     FMessage.Free;
+  except
+    on E: Exception do
+    FWriteLog(E.Message);
+  end;
+end;
+
+function TRecoTime.FGetTime(ATime: string): TDateTime;
+begin
+  if not TryStrToTime(ATime, Result) then
+  Result := StrToTime('9:30');
+end;
+
+function TRecoTime.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
+begin
+  Result := ATemplate;
+  Result := StringReplace(Result, '%USERNAME%', AUserInfo.UserName,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%FULLNAME%', AUserInfo.FullName,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%CITYNAME%', AUserInfo.CityName,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%STARTTIME%', AUserInfo.StartTime,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%EVENTTIME%',
+  FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
+end;
+
+function TRecoTime.FGetUserName: string;
+var
+  FUserName: array[0..255] of Char;
+  FUserSize: Cardinal;
+begin
+  FUserSize := SizeOf(FUserName);
+  Windows.GetUserName(@FUserName, FUserSize);
+  Result := Trim(FUserName);
+end;
+
+function TRecoTime.FGetSrvParam: TSrvParam;
+var
+  FIniFile: TIniFile;
+begin
+  try
+    FIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + PARAM_FILE);
+    Result.Server := FIniFile.ReadString('general', 'server', 'localhost');
+    Result.Database := FIniFile.ReadString('general', 'database', '');
+    Result.Username := FIniFile.ReadString('general', 'username', '');
+    Result.Password := FIniFile.ReadString('general', 'password', '');
+    FIniFile.Free;
   except
     on E: Exception do
     FWriteLog(E.Message);

@@ -22,6 +22,7 @@ type
     FullName: string;
     CityName: string;
     Email: string;
+    StartTime: string;
   end;
 
 type
@@ -68,9 +69,10 @@ type
         APassword, AFrom, ATo, ASubject, ABody: string);
       procedure FWriteLog(AMessage: string);
       procedure FTerminate;
-      function FGetSrvParam: TSrvParam;
-      function FGetUserName: string;
+      function FGetTime(ATime: string): TDateTime;
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
+      function FGetUserName: string;
+      function FGetSrvParam: TSrvParam;
     public
       procedure SetComment(AText: string);
   end;
@@ -174,6 +176,7 @@ begin
     FUIBQuery.Execute;
     FUserInfo.UserID := FUIBQuery.Fields.ByNameAsInteger['userid'];
     FUserInfo.Email := FUIBQuery.Fields.ByNameAsString['email'];
+    FUserInfo.StartTime := FUIBQuery.Fields.ByNameAsString['starttime'];
     FUIBQuery.Close(etmCommit);
     { SET_COMMENT }
     FUIBQuery.BuildStoredProc('SET_COMMENT', False);
@@ -262,35 +265,15 @@ begin
   end;
 end;
 
-procedure TRecoThread.FWriteLog(AMessage: string);
-var
-  FFileHandle: TextFile;
-  FFileName: string;
-begin
-  try
-    FFileName := GetEnvironmentVariable('TEMP') + '\' + LOG_FILE;
-    AssignFile(FFileHandle, FFileName);
-    if not FileExists(FFileName) then
-    ReWrite(FFileHandle) else Append(FFileHandle);
-    WriteLn(FFileHandle, FormatDateTime('[dd.mm.yyyy HH:nn:ss] ', Now) + AMessage);
-    CloseFile(FFileHandle);
-  except
-  end;
-end;
-
 procedure TRecoThread.FTerminate;
 begin
   Application.Terminate;
 end;
 
-function TRecoThread.FGetUserName: string;
-var
-  FUserName: array[0..255] of Char;
-  FUserSize: Cardinal;
+function TRecoThread.FGetTime(ATime: string): TDateTime;
 begin
-  FUserSize := SizeOf(FUserName);
-  Windows.GetUserName(@FUserName, FUserSize);
-  Result := Trim(FUserName);
+  if not TryStrToTime(ATime, Result) then
+  Result := StrToTime('9:30');
 end;
 
 function TRecoThread.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
@@ -302,10 +285,22 @@ begin
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%CITYNAME%', AUserInfo.CityName,
   [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%STARTTIME%', AUserInfo.StartTime,
+  [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%COMMENT%', FComment,
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%EVENTTIME%',
   FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
+end;
+
+function TRecoThread.FGetUserName: string;
+var
+  FUserName: array[0..255] of Char;
+  FUserSize: Cardinal;
+begin
+  FUserSize := SizeOf(FUserName);
+  Windows.GetUserName(@FUserName, FUserSize);
+  Result := Trim(FUserName);
 end;
 
 function TRecoThread.FGetSrvParam: TSrvParam;
@@ -322,6 +317,22 @@ begin
   except
     on E: Exception do
     FWriteLog(E.Message);
+  end;
+end;
+
+procedure TRecoThread.FWriteLog(AMessage: string);
+var
+  FFileHandle: TextFile;
+  FFileName: string;
+begin
+  try
+    FFileName := GetEnvironmentVariable('TEMP') + '\' + LOG_FILE;
+    AssignFile(FFileHandle, FFileName);
+    if not FileExists(FFileName) then
+    ReWrite(FFileHandle) else Append(FFileHandle);
+    WriteLn(FFileHandle, FormatDateTime('[dd.mm.yyyy HH:nn:ss] ', Now) + AMessage);
+    CloseFile(FFileHandle);
+  except
   end;
 end;
 
