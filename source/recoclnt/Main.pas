@@ -69,6 +69,7 @@ type
       procedure FWriteLog(AMessage: string);
       procedure FTerminate;
       function FGetSrvParam: TSrvParam;
+      function FGetUserName: string;
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
     public
       procedure SetComment(AText: string);
@@ -134,7 +135,19 @@ var
 begin
   inherited;
   try
+    FUserInfo.UserName := FGetUserName;
     CoInitialize(nil);
+    { GET_LDAPINFO }
+    FADSystemInfo := CreateOleObject('ADSystemInfo') as IADsADSystemInfo;
+    ADsGetObject('LDAP://' + FADSystemInfo.UserName, IADsUser, Pointer(FADUserInfo));
+    FUserInfo.UserName := FADUserInfo.Get('sAMAccountName');
+    FUserInfo.FullName := FADUserInfo.Get('displayName');
+    FUserInfo.CityName := FADUserInfo.Get('l');
+  except
+    on E: Exception do
+    FWriteLog(E.Message);
+  end;
+  try
     FSrvParam := FGetSrvParam;
     if (FSrvParam.Database = '') then
     begin
@@ -142,12 +155,6 @@ begin
       Synchronize(FTerminate);
       Exit;
     end;
-    { GET_LDAPINFO }
-    FADSystemInfo := CreateOleObject('ADSystemInfo') as IADsADSystemInfo;
-    ADsGetObject('LDAP://' + FADSystemInfo.UserName, IADsUser, Pointer(FADUserInfo));
-    FUserInfo.UserName := FADUserInfo.Get('sAMAccountName');
-    FUserInfo.FullName := FADUserInfo.Get('displayName');
-    FUserInfo.CityName := FADUserInfo.Get('l');
     { DATABASE }
     FUIBDatabase := TUIBDatabase.Create(nil);
     FUIBTransaction := TUIBTransaction.Create(nil);
@@ -274,6 +281,16 @@ end;
 procedure TRecoThread.FTerminate;
 begin
   Application.Terminate;
+end;
+
+function TRecoThread.FGetUserName: string;
+var
+  FUserName: array[0..255] of Char;
+  FUserSize: Cardinal;
+begin
+  FUserSize := SizeOf(FUserName);
+  Windows.GetUserName(@FUserName, FUserSize);
+  Result := Trim(FUserName);
 end;
 
 function TRecoThread.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;

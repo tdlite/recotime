@@ -57,6 +57,7 @@ type
       procedure FOnInitializeISO(var ATransferHeader: TTransfer;
         var AHeaderEncoding: Char; var ACharSet: string);
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
+      function FGetUserName: string;
       function FGetSrvParam: TSrvParam;
   end;
 
@@ -89,18 +90,24 @@ var
   FIsExistEntry: Boolean;
 begin
   try
-    FSrvParam := FGetSrvParam;
-    if (FSrvParam.Database = '') then
-    begin
-      FWriteLog('Database name is not specified');
-      Exit;
-    end;
+    FUserInfo.UserName := FGetUserName;
     { GET_LDAPINFO }
     FADSystemInfo := CreateOleObject('ADSystemInfo') as IADsADSystemInfo;
     ADsGetObject('LDAP://' + FADSystemInfo.UserName, IADsUser, Pointer(FADUserInfo));
     FUserInfo.UserName := FADUserInfo.Get('sAMAccountName');
     FUserInfo.FullName := FADUserInfo.Get('displayName');
     FUserInfo.CityName := FADUserInfo.Get('l');
+  except
+    on E: Exception do
+    FWriteLog(E.Message);
+  end;
+  try
+    FSrvParam := FGetSrvParam;
+    if (FSrvParam.Database = '') then
+    begin
+      FWriteLog('Database name is not specified');
+      Exit;
+    end;
     { DATABASE }
     FUIBDatabase := TUIBDatabase.Create(nil);
     FUIBTransaction := TUIBTransaction.Create(nil);
@@ -184,6 +191,16 @@ begin
     on E: Exception do
     FWriteLog(E.Message);
   end;
+end;
+
+function TRecoTime.FGetUserName: string;
+var
+  FUserName: array[0..255] of Char;
+  FUserSize: Cardinal;
+begin
+  FUserSize := SizeOf(FUserName);
+  Windows.GetUserName(@FUserName, FUserSize);
+  Result := Trim(FUserName);
 end;
 
 function TRecoTime.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
