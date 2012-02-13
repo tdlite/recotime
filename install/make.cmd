@@ -1,2 +1,2 @@
 candle.exe recotime.wxs
-light.exe recotime.wxsobj
+light.exe recotime.wixobj
