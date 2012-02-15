@@ -22,6 +22,7 @@ type
     FullName: string;
     CityName: string;
     Email: string;
+    WorkTime: TDateTime;
   end;
 
 type
@@ -71,6 +72,7 @@ type
       function FGetSrvParam: TSrvParam;
       function FGetUserName: string;
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
+      function FConvertTime(AStrTime: string): TDateTime;
     public
       procedure SetComment(AText: string);
   end;
@@ -302,10 +304,18 @@ begin
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%CITYNAME%', AUserInfo.CityName,
   [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%WORKTIME%', TimeToStr(AUserInfo.WorkTime),
+  [rfReplaceAll, rfIgnoreCase]);  
   Result := StringReplace(Result, '%COMMENT%', FComment,
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%EVENTTIME%',
   FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
+end;
+
+function TRecoThread.FConvertTime(AStrTime: string): TDateTime;
+begin
+  if not TryStrToTime(AStrTime, Result) then
+  Result := StrToTime('9:30');
 end;
 
 function TRecoThread.FGetSrvParam: TSrvParam;
