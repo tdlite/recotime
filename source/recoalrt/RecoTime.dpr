@@ -29,6 +29,7 @@ type
     FullName: string;
     CityName: string;
     Email: string;
+    WorkTime: TDateTime;
   end;
 
 type
@@ -59,6 +60,7 @@ type
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
       function FGetUserName: string;
       function FGetSrvParam: TSrvParam;
+      function FConvertTime(AStrTime: string): TDateTime;
   end;
 
 function ADsGetObject(lpszPathName: WideString; const riid: TGUID;
@@ -127,6 +129,7 @@ begin
     FUIBQuery.Execute;
     FUserInfo.UserID := FUIBQuery.Fields.ByNameAsInteger['userid'];
     FUserInfo.Email := FUIBQuery.Fields.ByNameAsString['email'];
+    FUserInfo.WorkTime := FConvertTime(FUIBQuery.Fields.ByNameAsString['worktime']);
     FUIBQuery.Close(etmCommit);
     { CHECK_ENTRY }
     FUIBQuery.BuildStoredProc('CHECK_ENTRY', False);
@@ -136,7 +139,7 @@ begin
     FIsExistEntry := FUIBQuery.Fields.ByNameAsBoolean['exist'];
     FUIBQuery.Close(etmCommit);
     { AFTER TIME }    
-    if ((Time > StrToTime('9:30')) and (not FIsExistEntry)) then
+    if ((Time > FUserInfo.WorkTime) and (not FIsExistEntry)) then
     begin
       { RUNEXEC }    
       FRunExec;
@@ -203,6 +206,12 @@ begin
   Result := Trim(FUserName);
 end;
 
+function TRecoTime.FConvertTime(AStrTime: string): TDateTime;
+begin
+  if not TryStrToTime(AStrTime, Result) then
+  Result := StrToTime('9:30');
+end;
+
 function TRecoTime.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
 begin
   Result := ATemplate;
@@ -211,6 +220,8 @@ begin
   Result := StringReplace(Result, '%FULLNAME%', AUserInfo.FullName,
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%CITYNAME%', AUserInfo.CityName,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%WORKTIME%', TimeToStr(AUserInfo.WorkTime),
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%EVENTTIME%',
   FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
