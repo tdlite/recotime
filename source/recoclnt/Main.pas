@@ -40,16 +40,16 @@ type
   end;  
 
 type
-  TfrmRecoclnt = class(TForm)
+  TfrmRecoClnt = class(TForm)
     imgHeader: TImage;
     imgWarning: TImage;    
     lblEntry: TStaticText;
     lblComment: TStaticText;
     txtComment: TMemo;
     btnSend: TButton;
-    procedure FormCreate(Sender: TObject);
     procedure btnSendClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);    
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -66,8 +66,8 @@ type
         var AHeaderEncoding: Char; var ACharSet: string);
       procedure FSendMail(AHost: string; APort: integer; AUsername,
         APassword, AFrom, ATo, ASubject, ABody: string);
-      procedure FWriteLog(AMessage: string);
       procedure FTerminate;
+      procedure FWriteLog(AMessage: string);
       function FGetSrvParam: TSrvParam;
       function FGetUserName: string;
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
@@ -79,7 +79,7 @@ function ADsGetObject(lpszPathName: WideString; const riid: TGUID;
   out ppObject: Pointer): HRESULT; stdcall; external 'activeds.dll';
 
 var
-  frmRecoclnt: TfrmRecoclnt;
+  frmRecoClnt: TfrmRecoClnt;
   RecoThread: TRecoThread;
 
 const
@@ -91,7 +91,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TfrmRecoclnt.btnSendClick(Sender: TObject);
+procedure TfrmRecoClnt.btnSendClick(Sender: TObject);
 begin
   if (Trim(txtComment.Lines.Text) = '') then
   begin
@@ -106,12 +106,12 @@ begin
   Self.Hide;
 end;
 
-procedure TfrmRecoclnt.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfrmRecoClnt.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   CanClose := False;
 end;
 
-procedure TfrmRecoclnt.FormCreate(Sender: TObject);
+procedure TfrmRecoClnt.FormCreate(Sender: TObject);
 begin
   lblEntry.Caption := 'Вход в систему был произведен после времени начала' +
     ' рабочего дня.' + #10#13 + 'Пожалуйста, укажите поясняющий' +
@@ -119,6 +119,11 @@ begin
 end;
 
 { TRecoThread }
+
+procedure TRecoThread.SetComment(AText: string);
+begin
+  FComment := AText;
+end;
 
 procedure TRecoThread.Execute;
 var
@@ -262,6 +267,11 @@ begin
   end;
 end;
 
+procedure TRecoThread.FTerminate;
+begin
+  Application.Terminate;
+end;
+
 procedure TRecoThread.FWriteLog(AMessage: string);
 var
   FFileHandle: TextFile;
@@ -278,9 +288,21 @@ begin
   end;
 end;
 
-procedure TRecoThread.FTerminate;
+function TRecoThread.FGetSrvParam: TSrvParam;
+var
+  FIniFile: TIniFile;
 begin
-  Application.Terminate;
+  try
+    FIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + PARAM_FILE);
+    Result.Server := FIniFile.ReadString('general', 'server', 'localhost');
+    Result.Database := FIniFile.ReadString('general', 'database', '');
+    Result.Username := FIniFile.ReadString('general', 'username', '');
+    Result.Password := FIniFile.ReadString('general', 'password', '');
+    FIniFile.Free;
+  except
+    on E: Exception do
+    FWriteLog(E.Message);
+  end;
 end;
 
 function TRecoThread.FGetUserName: string;
@@ -306,28 +328,6 @@ begin
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%EVENTTIME%',
   FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
-end;
-
-function TRecoThread.FGetSrvParam: TSrvParam;
-var
-  FIniFile: TIniFile;
-begin
-  try
-    FIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + PARAM_FILE);
-    Result.Server := FIniFile.ReadString('general', 'server', 'localhost');
-    Result.Database := FIniFile.ReadString('general', 'database', '');
-    Result.Username := FIniFile.ReadString('general', 'username', '');
-    Result.Password := FIniFile.ReadString('general', 'password', '');
-    FIniFile.Free;
-  except
-    on E: Exception do
-    FWriteLog(E.Message);
-  end;
-end;
-
-procedure TRecoThread.SetComment(AText: string);
-begin
-  FComment := AText;
 end;
 
 end.

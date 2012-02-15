@@ -1,14 +1,14 @@
-program RecoTime;
+program RecoClient;
 
 uses
   Forms,
-  Main in 'Main.pas' {frmRecoclnt};
-  
+  Main in 'Main.pas' {frmRecoClnt};
+
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TfrmRecoclnt, frmRecoclnt);
+  Application.CreateForm(TfrmRecoClnt, frmRecoClnt);
   Application.Run;
 end.

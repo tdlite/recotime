@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs,
-  ActiveX, ComObj, RecoTime_TLB, SensEvents_TLB, RecoLogon, EventSystemLib_TLB;
+  ActiveX, ComObj, EventSystemLib_TLB, SensEvents_TLB, RecoService_TLB,
+  RecoLogon;
 
 type
   TRecoSrvc = class(TService)

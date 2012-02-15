@@ -1,8 +1,12 @@
-program RecoTime;
+program RecoService;
 
 uses
   SvcMgr,
-  Main in 'Main.pas'; {RecoSrvc: TService}
+  Main in 'Main.pas',
+  RecoService_TLB in 'RecoService_TLB.pas',
+  SensEvents_TLB in 'SensEvents_TLB.pas';
+
+{RecoSrvc: TService}
 
 {$R *.TLB}
 

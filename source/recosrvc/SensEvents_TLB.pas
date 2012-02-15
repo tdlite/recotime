@@ -12,7 +12,7 @@ unit SensEvents_TLB;
 // ************************************************************************ //
 
 // $Rev: 8291 $
-// File generated on 04.02.2012 14:01:09 from Type Library described below.
+// File generated on 16.02.2012 0:51:42 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\Windows\System32\sens.dll (1)
@@ -23,7 +23,7 @@ unit SensEvents_TLB;
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\Windows\SysWOW64\stdole2.tlb)
 // Parent TypeLibrary:
-//   (0) v1.0 RecoTime, (C:\Users\GalimRu\Documents\RAD Studio\Projects\RecoTime\RecoTime.tlb)
+//   (0) v1.0 RecoService, (C:\recosrvc\RecoService.tlb)
 // ************************************************************************ //
 {$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
 {$WARN SYMBOL_PLATFORM OFF}

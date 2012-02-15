@@ -1,18 +1,9 @@
-program RecoTime;
+program RecoAlert;
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
-  ComObj,
-  ActiveX,
-  ActiveDs_TLB,
-  IniFiles,
-  IdSMTP,
-  IdMessage,
-  IdText,
-  IdCoderHeader,
-  UIB;
+  Windows, SysUtils, Classes, ComObj, ActiveX, IniFiles,
+  IdSMTP, IdMessage, IdText, IdCoderHeader,
+  ActiveDs_TLB, UIB;
 
 type
   TSrvParam = record
@@ -47,25 +38,26 @@ type
   end;
 
 type
-  TRecoTime = class(TObject)
+  TRecoAlrt = class(TObject)
     private
-      procedure FAlert;
-      procedure FWriteLog(AMessage: string);
-      procedure FSendMail(AHost: string; APort: integer;
-        AUsername, APassword, AFrom, ATo, ASubject, ABody: string);
-      procedure FRunExec;
       procedure FOnInitializeISO(var ATransferHeader: TTransfer;
         var AHeaderEncoding: Char; var ACharSet: string);
-      function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
-      function FGetUserName: string;
+      procedure FRunExec;
+      procedure FSendMail(AHost: string; APort: integer;
+        AUsername, APassword, AFrom, ATo, ASubject, ABody: string);      
+      procedure FWriteLog(AMessage: string);
       function FGetSrvParam: TSrvParam;
+      function FGetUserName: string;
+      function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
+    public
+      procedure DoEvent;
   end;
 
 function ADsGetObject(lpszPathName: WideString; const riid: TGUID;
   out ppObject: Pointer): HRESULT; stdcall; external 'activeds.dll';
 
 var
-  FRecoTime: TRecoTime;
+  RecoAlrt: TRecoAlrt;
 
 const
   PARAM_FILE = 'recotime.ini';
@@ -73,9 +65,9 @@ const
   LIB_FILE = 'fbclient.dll';
   LOG_FILE = 'recoalrt.log';
 
-{ TRecoTime }
+{ TRecoAlrt }
 
-procedure TRecoTime.FAlert;
+procedure TRecoAlrt.DoEvent;
 var
   FUIBDatabase: TUIBDatabase;
   FUIBTransaction: TUIBTransaction;
@@ -176,47 +168,13 @@ begin
   FADSystemInfo := nil;
 end;
 
-function TRecoTime.FGetSrvParam: TSrvParam;
-var
-  FIniFile: TIniFile;
+procedure TRecoAlrt.FOnInitializeISO(var ATransferHeader: TTransfer;
+  var AHeaderEncoding: Char; var ACharSet: string);
 begin
-  try
-    FIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + PARAM_FILE);
-    Result.Server := FIniFile.ReadString('general', 'server', 'localhost');
-    Result.Database := FIniFile.ReadString('general', 'database', '');
-    Result.Username := FIniFile.ReadString('general', 'username', '');
-    Result.Password := FIniFile.ReadString('general', 'password', '');
-    FIniFile.Free;
-  except
-    on E: Exception do
-    FWriteLog(E.Message);
-  end;
+  ACharSet := 'windows-1251';
 end;
 
-function TRecoTime.FGetUserName: string;
-var
-  FUserName: array[0..255] of Char;
-  FUserSize: Cardinal;
-begin
-  FUserSize := SizeOf(FUserName);
-  Windows.GetUserName(@FUserName, FUserSize);
-  Result := Trim(FUserName);
-end;
-
-function TRecoTime.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
-begin
-  Result := ATemplate;
-  Result := StringReplace(Result, '%USERNAME%', AUserInfo.UserName,
-  [rfReplaceAll, rfIgnoreCase]);
-  Result := StringReplace(Result, '%FULLNAME%', AUserInfo.FullName,
-  [rfReplaceAll, rfIgnoreCase]);
-  Result := StringReplace(Result, '%CITYNAME%', AUserInfo.CityName,
-  [rfReplaceAll, rfIgnoreCase]);
-  Result := StringReplace(Result, '%EVENTTIME%',
-  FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
-end;
-
-procedure TRecoTime.FRunExec;
+procedure TRecoAlrt.FRunExec;
 var
   FStartupInfo: TStartupInfo;
   FProcessInfo: TProcessInformation;
@@ -234,13 +192,7 @@ begin
   end;
 end;
 
-procedure TRecoTime.FOnInitializeISO(var ATransferHeader: TTransfer;
-  var AHeaderEncoding: Char; var ACharSet: string);
-begin
-  ACharSet := 'windows-1251';
-end;
-
-procedure TRecoTime.FSendMail(AHost: string; APort: integer; AUsername,
+procedure TRecoAlrt.FSendMail(AHost: string; APort: integer; AUsername,
   APassword, AFrom, ATo, ASubject, ABody: string);
 var
   FSMTP: TIdSMTP;
@@ -258,7 +210,7 @@ begin
     FMessage.From.Address := AFrom;
     FMessage.Recipients.EMailAddresses := ATo;
     FMessage.Subject := ASubject;
-    FText := TIdText.Create(FMessage.MessageParts);    
+    FText := TIdText.Create(FMessage.MessageParts);
     FText.Body.Text := ABody;
     FText.ContentType := 'text/html';
     FText.CharSet := 'windows-1251';
@@ -275,7 +227,7 @@ begin
       FSMTP.Disconnect;
     end;
     FSMTP.Free;
-    FText.Free;    
+    FText.Free;
     FMessage.Free;
   except
     on E: Exception do
@@ -283,7 +235,7 @@ begin
   end;
 end;
 
-procedure TRecoTime.FWriteLog(AMessage: string);
+procedure TRecoAlrt.FWriteLog(AMessage: string);
 var
   FFileHandle: TextFile;
   FFileName: string;
@@ -299,10 +251,50 @@ begin
   end;
 end;
 
+function TRecoAlrt.FGetSrvParam: TSrvParam;
+var
+  FIniFile: TIniFile;
+begin
+  try
+    FIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + PARAM_FILE);
+    Result.Server := FIniFile.ReadString('general', 'server', 'localhost');
+    Result.Database := FIniFile.ReadString('general', 'database', '');
+    Result.Username := FIniFile.ReadString('general', 'username', '');
+    Result.Password := FIniFile.ReadString('general', 'password', '');
+    FIniFile.Free;
+  except
+    on E: Exception do
+    FWriteLog(E.Message);
+  end;
+end;
+
+function TRecoAlrt.FGetUserName: string;
+var
+  FUserName: array[0..255] of Char;
+  FUserSize: Cardinal;
+begin
+  FUserSize := SizeOf(FUserName);
+  Windows.GetUserName(@FUserName, FUserSize);
+  Result := Trim(FUserName);
+end;
+
+function TRecoAlrt.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
+begin
+  Result := ATemplate;
+  Result := StringReplace(Result, '%USERNAME%', AUserInfo.UserName,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%FULLNAME%', AUserInfo.FullName,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%CITYNAME%', AUserInfo.CityName,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%EVENTTIME%',
+  FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
+end;
+
 begin
   CoInitialize(nil);
-  FRecoTime := TRecoTime.Create;
-  FRecoTime.FAlert;
-  FRecoTime.Free;
+  RecoAlrt := TRecoAlrt.Create;
+  RecoAlrt.DoEvent;
+  RecoAlrt.Free;
   CoUninitialize;
 end.

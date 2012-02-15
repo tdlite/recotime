@@ -1,4 +1,4 @@
-object frmRecoclnt: TfrmRecoclnt
+object frmRecoClnt: TfrmRecoClnt
   Left = 0
   Top = 0
   BorderIcons = []

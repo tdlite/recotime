@@ -1,4 +1,4 @@
-unit RecoTime_TLB;
+unit RecoService_TLB;
 
 // ************************************************************************ //
 // WARNING                                                                    
@@ -12,14 +12,14 @@ unit RecoTime_TLB;
 // ************************************************************************ //
 
 // $Rev: 8291 $
-// File generated on 04.02.2012 14:01:09 from Type Library described below.
+// File generated on 16.02.2012 0:51:42 from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: C:\Users\GalimRu\Documents\RAD Studio\Projects\RecoTime\RecoTime.tlb (1)
-// LIBID: {803FCC48-4CD9-45C3-879A-4FC9D30693E4}
+// Type Lib: C:\recosrvc\RecoService.tlb (1)
+// LIBID: {26B55A65-31A4-45A4-929E-F453A4280D27}
 // LCID: 0
 // Helpfile: 
-// HelpString: RecoTime Library
+// HelpString: RecoService Library
 // DepndLst: 
 //   (1) v2.0 SensEvents, (C:\Windows\System32\sens.dll)
 //   (2) v2.0 stdole, (C:\Windows\SysWOW64\stdole2.tlb)
@@ -42,12 +42,12 @@ uses Windows, ActiveX, Classes, Graphics, SensEvents_TLB, StdVCL, Variants;
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
-  RecoTimeMajorVersion = 1;
-  RecoTimeMinorVersion = 0;
+  RecoServiceMajorVersion = 1;
+  RecoServiceMinorVersion = 0;
 
-  LIBID_RecoTime: TGUID = '{803FCC48-4CD9-45C3-879A-4FC9D30693E4}';
+  LIBID_RecoService: TGUID = '{26B55A65-31A4-45A4-929E-F453A4280D27}';
 
-  CLASS_RecoLogon: TGUID = '{E1CCAF0C-8F30-48D3-88F9-1CC7E6536E14}';
+  CLASS_RecoLogon: TGUID = '{BB3AF6C5-156A-48EE-903B-B2828C092459}';
 type
 
 // *********************************************************************//

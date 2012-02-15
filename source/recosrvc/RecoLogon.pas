@@ -5,7 +5,7 @@ unit RecoLogon;
 interface
 
 uses
-  ComObj, ActiveX, RecoTime_TLB, SensEvents_TLB, StdVcl, SysUtils, Windows;
+  ComObj, ActiveX, RecoService_TLB, SensEvents_TLB, StdVcl, SysUtils, Windows;
 
 type
   TRecoLogon = class(TAutoObject, ISensLogon)
