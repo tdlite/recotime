@@ -30,6 +30,7 @@ type
     CityName: string;
     Email: string;
     WorkTime: TDateTime;
+    Enabled: Boolean;
   end;
 
 type
@@ -130,7 +131,9 @@ begin
     FUserInfo.UserID := FUIBQuery.Fields.ByNameAsInteger['userid'];
     FUserInfo.Email := FUIBQuery.Fields.ByNameAsString['email'];
     FUserInfo.WorkTime := FConvertTime(FUIBQuery.Fields.ByNameAsString['worktime']);
+    FUserInfo.Enabled := FUIBQuery.Fields.ByNameAsBoolean['enabled'];
     FUIBQuery.Close(etmCommit);
+    if (not FUserInfo.Enabled) then Exit;
     { CHECK_ENTRY }
     FUIBQuery.BuildStoredProc('CHECK_ENTRY', False);
     FUIBQuery.Params.ByNameAsInteger['userid'] := FUserInfo.UserID;
