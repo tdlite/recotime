@@ -20,6 +20,7 @@ type
     FullName: string;
     CityName: string;
     Email: string;
+    Enabled: Boolean;
   end;
 
 type
@@ -119,7 +120,10 @@ begin
     FUIBQuery.Execute;
     FUserInfo.UserID := FUIBQuery.Fields.ByNameAsInteger['userid'];
     FUserInfo.Email := FUIBQuery.Fields.ByNameAsString['email'];
+    FUserInfo.Enabled := FUIBQuery.Fields.ByNameAsBoolean['enabled'];
     FUIBQuery.Close(etmCommit);
+    { CHECK_ENABLED }
+    if (not FUserInfo.Enabled) then Exit;
     { CHECK_ENTRY }
     FUIBQuery.BuildStoredProc('CHECK_ENTRY', False);
     FUIBQuery.Params.ByNameAsInteger['userid'] := FUserInfo.UserID;
