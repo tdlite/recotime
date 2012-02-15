@@ -176,6 +176,7 @@ begin
     FUIBQuery.Execute;
     FUserInfo.UserID := FUIBQuery.Fields.ByNameAsInteger['userid'];
     FUserInfo.Email := FUIBQuery.Fields.ByNameAsString['email'];
+    FUserInfo.WorkTime := FConvertTime(FUIBQuery.Fields.ByNameAsString['worktime']);
     FUIBQuery.Close(etmCommit);
     { SET_COMMENT }
     FUIBQuery.BuildStoredProc('SET_COMMENT', False);
