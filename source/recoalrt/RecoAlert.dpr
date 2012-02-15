@@ -20,6 +20,7 @@ type
     FullName: string;
     CityName: string;
     Email: string;
+    WorkTime: string;
     Enabled: Boolean;
   end;
 
@@ -49,6 +50,7 @@ type
       procedure FWriteLog(AMessage: string);
       function FGetSrvParam: TSrvParam;
       function FGetUserName: string;
+      function FPrepareTime(AStrTime: string): string;
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
     public
       procedure DoEvent;
@@ -120,6 +122,7 @@ begin
     FUIBQuery.Execute;
     FUserInfo.UserID := FUIBQuery.Fields.ByNameAsInteger['userid'];
     FUserInfo.Email := FUIBQuery.Fields.ByNameAsString['email'];
+    FUserInfo.WorkTime := FPrepareTime(FUIBQuery.Fields.ByNameAsString['worktime']);
     FUserInfo.Enabled := FUIBQuery.Fields.ByNameAsBoolean['enabled'];
     FUIBQuery.Close(etmCommit);
     { CHECK_ENABLED }
@@ -131,8 +134,8 @@ begin
     FUIBQuery.Execute;
     FIsExistEntry := FUIBQuery.Fields.ByNameAsBoolean['exist'];
     FUIBQuery.Close(etmCommit);
-    { AFTER TIME }    
-    if ((Time > StrToTime('9:30')) and (not FIsExistEntry)) then
+    { AFTER TIME }
+    if ((Time > StrToTime(FUserInfo.WorkTime)) and (not FIsExistEntry)) then
     begin
       { RUNEXEC }    
       FRunExec;
@@ -282,6 +285,16 @@ begin
   Result := Trim(FUserName);
 end;
 
+function TRecoAlrt.FPrepareTime(AStrTime: string): string;
+var
+  FTime: TDateTime;
+begin
+  if TryStrToTime(AStrTime, FTime) then
+  Result := AStrTime
+  else
+  Result := '9:30';
+end;
+
 function TRecoAlrt.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
 begin
   Result := ATemplate;
@@ -290,6 +303,8 @@ begin
   Result := StringReplace(Result, '%FULLNAME%', AUserInfo.FullName,
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%CITYNAME%', AUserInfo.CityName,
+  [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, '%WORKTIME%', AUserInfo.WorkTime,
   [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '%EVENTTIME%',
   FormatDateTime('dd.mm.yyyy HH:nn', Now), [rfReplaceAll, rfIgnoreCase]);
