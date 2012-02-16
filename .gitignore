@@ -1,7 +1,10 @@
+# Build Files
+*.exe
+*.msi
+
 # Delphi Files
 __history
 *.db
-*.exe
 *.dcu
 *.dcr
 *.local
