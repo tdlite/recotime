@@ -113,4 +113,5 @@ end;
 initialization
   TAutoObjectFactory.Create(ComServer, TRecoLogon, Class_RecoLogon,
     ciSingleInstance, tmApartment);
+  ComServer.UIInteractive := False;
 end.
