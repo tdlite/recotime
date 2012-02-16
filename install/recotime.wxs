@@ -23,9 +23,8 @@
             <ServiceInstall Id="InstallService" Name="recosrvc" DisplayName="RecoTime Service"
               Type="ownProcess" Start="auto" ErrorControl="normal" 
               Description="Time Attendance System" Account="LocalSystem" />
-            <ServiceControl Id="StartService"
-              Name="recosrvc" Start="install" Wait="no" />
-            <ServiceControl Id="ControlService" Start="install" Stop="both" Remove="uninstall" Name="recosrvc" Wait="yes" />
+            <ServiceControl Id="ControlService"
+              Name="recosrvc" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
           </Component>
         </Directory>
       </Directory>
