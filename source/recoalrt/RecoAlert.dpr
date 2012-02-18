@@ -145,6 +145,7 @@ begin
       FUIBQuery.SQL.Add('SELECT PARAMDATA FROM PARAMS WHERE PARAMID = :PARAMID');
       FUIBQuery.Params.ByNameAsInteger['paramid'] := 0;
       FUIBQuery.Open;
+      if (FUIBQuery.Fields.GetBlobSize(0) <> SizeOf(FSrvData)) then Exit;
       FUIBQuery.Fields.ReadBlob('paramdata', FStream);
       FUIBQuery.Close(etmCommit);
       FStream.Read(FSrvData, SizeOf(FSrvData));
@@ -155,6 +156,7 @@ begin
       FUIBQuery.SQL.Add('SELECT PARAMDATA FROM PARAMS WHERE PARAMID = :PARAMID');
       FUIBQuery.Params.ByNameAsInteger['paramid'] := 1;
       FUIBQuery.Open;
+      if (FUIBQuery.Fields.GetBlobSize(0) <> SizeOf(FMsgData)) then Exit;
       FUIBQuery.Fields.ReadBlob('paramdata', FStream);
       FUIBQuery.Close(etmCommit);
       FStream.Read(FMsgData, SizeOf(FMsgData));
