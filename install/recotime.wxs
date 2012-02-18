@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product Id='BBB997AA-B468-4F0D-817E-0AB13F4B732F' Name='RecoTime' 
-    Language='1033' Version='1.0.0.0' Manufacturer='Renaissance Insurance'
+    Language='1033' Version='0.3.50' Manufacturer='Renaissance Insurance'
     UpgradeCode='C48F0D13-7582-4EDA-93F6-B8933219CC80'>
   <Package Description='RecoTime Installer' Manufacturer='Renaissance Insurance'
     InstallerVersion='200' Languages='1033' Compressed='yes' />
