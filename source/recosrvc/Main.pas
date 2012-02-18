@@ -106,11 +106,11 @@ begin
   CoCreateInstance(ProgIdToClassId('EventSystem.EventSystem'), nil,
   CLSCTX_SERVER, IID_IEventSystem, FEventSystem);
   FEventSystem.Store('EventSystem.EventSubscription', FEventSubscription);
-  while not Self.Terminated do
+  while (not Self.Terminated) do
   begin
-    GetMessage(FMessage, 0, 0, 0);
-    TranslateMessage(FMessage);
+    PeekMessage(FMessage, 0, 0, 0, PM_REMOVE);
     DispatchMessage(FMessage);
+    Sleep(1000);
   end;
   CoCreateInstance(ProgIdToClassId('EventSystem.EventSystem'), nil,
   CLSCTX_SERVER, IID_IEventSystem, FEventSystem);
