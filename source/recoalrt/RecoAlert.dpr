@@ -48,9 +48,9 @@ type
       procedure FSendMail(AHost: string; APort: integer;
         AUsername, APassword, AFrom, ATo, ASubject, ABody: string);      
       procedure FWriteLog(AMessage: string);
+      function FCheckTime(AStrTime: string): Boolean;
       function FGetSrvParam: TSrvParam;
       function FGetUserName: string;
-      function FPrepareTime(AStrTime: string): string;
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
     public
       procedure DoEvent;
@@ -122,9 +122,11 @@ begin
     FUIBQuery.Execute;
     FUserInfo.UserID := FUIBQuery.Fields.ByNameAsInteger['userid'];
     FUserInfo.Email := FUIBQuery.Fields.ByNameAsString['email'];
-    FUserInfo.WorkTime := FPrepareTime(FUIBQuery.Fields.ByNameAsString['worktime']);
+    FUserInfo.WorkTime := FUIBQuery.Fields.ByNameAsString['worktime'];
     FUserInfo.Enabled := FUIBQuery.Fields.ByNameAsBoolean['enabled'];
     FUIBQuery.Close(etmCommit);
+    { CHECK_TIME }
+    if (not FCheckTime(FUserInfo.WorkTime)) then Exit;
     { CHECK_ENABLED }
     if (not FUserInfo.Enabled) then Exit;
     { CHECK_ENTRY }
@@ -260,6 +262,13 @@ begin
   end;
 end;
 
+function TRecoAlrt.FCheckTime(AStrTime: string): Boolean;
+var
+  FTime: TDateTime;
+begin
+  Result := TryStrToTime(AStrTime, FTime);
+end;
+
 function TRecoAlrt.FGetSrvParam: TSrvParam;
 var
   FIniFile: TIniFile;
@@ -285,16 +294,6 @@ begin
   FUserSize := SizeOf(FUserName);
   Windows.GetUserName(@FUserName, FUserSize);
   Result := Trim(FUserName);
-end;
-
-function TRecoAlrt.FPrepareTime(AStrTime: string): string;
-var
-  FTime: TDateTime;
-begin
-  if TryStrToTime(AStrTime, FTime) then
-  Result := AStrTime
-  else
-  Result := '9:30';
 end;
 
 function TRecoAlrt.FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
