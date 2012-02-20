@@ -27,9 +27,17 @@ type
       FRecoLogon: ISensLogon;
       FEventSystem: IEventSystem;
       FEventSubscription: IEventSubscription;
+      procedure FLockWorkStation;
+      function FGetCurrentDay: WORD;
     protected
       procedure Execute; override;
   end;
+
+function WTSGetActiveConsoleSessionId: DWORD; stdcall;
+external 'kernel32.dll';
+
+function WTSQueryUserToken(SessionId: ULONG; var phToken: THandle): BOOL; stdcall;
+external 'wtsapi32.dll';
 
 var
   RecoSrvc: TRecoSrvc;
@@ -93,32 +101,72 @@ procedure TRecoThread.Execute;
 var
   FMessage: TMSG;
   FErrorIndex: integer;
+  FToday: WORD;
 begin
   inherited;
-  CoInitializeEx(nil, COINIT_MULTITHREADED);
-  FRecoLogon := CoRecoLogon.Create;
-  CoCreateInstance(ProgIdToClassId('EventSystem.EventSubscription'), nil,
-  CLSCTX_SERVER, IID_IEventSubscription, FEventSubscription);
-  FEventSubscription.SubscriptionID := SUBSCRIPTION_ID;
-  FEventSubscription.SubscriptionName := 'RecoLogon';
-  FEventSubscription.EventClassID := SENSGUID_EVENTCLASS_LOGON;
-  FEventSubscription.SubscriberInterface := FRecoLogon;
-  CoCreateInstance(ProgIdToClassId('EventSystem.EventSystem'), nil,
-  CLSCTX_SERVER, IID_IEventSystem, FEventSystem);
-  FEventSystem.Store('EventSystem.EventSubscription', FEventSubscription);
-  while (not Self.Terminated) do
-  begin
-    PeekMessage(FMessage, 0, 0, 0, PM_REMOVE);
-    DispatchMessage(FMessage);
-    Sleep(1000);
+  try
+    CoInitializeEx(nil, COINIT_MULTITHREADED);
+    FRecoLogon := CoRecoLogon.Create;
+    CoCreateInstance(ProgIdToClassId('EventSystem.EventSubscription'), nil,
+    CLSCTX_SERVER, IID_IEventSubscription, FEventSubscription);
+    FEventSubscription.SubscriptionID := SUBSCRIPTION_ID;
+    FEventSubscription.SubscriptionName := 'RecoLogon';
+    FEventSubscription.EventClassID := SENSGUID_EVENTCLASS_LOGON;
+    FEventSubscription.SubscriberInterface := FRecoLogon;
+    CoCreateInstance(ProgIdToClassId('EventSystem.EventSystem'), nil,
+    CLSCTX_SERVER, IID_IEventSystem, FEventSystem);
+    FEventSystem.Store('EventSystem.EventSubscription', FEventSubscription);
+    FToday := FGetCurrentDay;
+    while (not Self.Terminated) do
+    begin
+      PeekMessage(FMessage, 0, 0, 0, PM_REMOVE);
+      DispatchMessage(FMessage);
+      if (FToday <> FGetCurrentDay) then
+      begin
+        FToday := FGetCurrentDay;
+        FLockWorkStation;
+      end;
+      Sleep(1000);
+    end;
+    CoCreateInstance(ProgIdToClassId('EventSystem.EventSystem'), nil,
+    CLSCTX_SERVER, IID_IEventSystem, FEventSystem);
+    FEventSystem.Remove('EventSystem.EventSubscription',
+    'SubscriptionID == ' + SUBSCRIPTION_ID, FErrorIndex);
+    FEventSubscription := nil;
+    FEventSystem := nil;
+    CoUninitialize;
+  except
   end;
-  CoCreateInstance(ProgIdToClassId('EventSystem.EventSystem'), nil,
-  CLSCTX_SERVER, IID_IEventSystem, FEventSystem);
-  FEventSystem.Remove('EventSystem.EventSubscription',
-  'SubscriptionID == ' + SUBSCRIPTION_ID, FErrorIndex);
-  FEventSubscription := nil;
-  FEventSystem := nil;
-  CoUninitialize;
+end;
+
+procedure TRecoThread.FLockWorkStation;
+var
+  FStartupInfo: TStartupInfo;
+  FProcessInfo: TProcessInformation;
+  FToken: THandle;
+const
+  RUN_FILE = 'rundll32.exe user32.dll,LockWorkStation';
+begin
+  try
+    if WTSQueryUserToken(WTSGetActiveConsoleSessionId, FToken) then
+    begin
+      ZeroMemory(@FStartupInfo, SizeOf(TStartupInfo));
+      FStartupInfo.cb := SizeOf(TStartupInfo);
+      CreateProcessAsUser(FToken, nil, PChar(RUN_FILE), nil,
+      nil, False, 0, nil, nil, FStartupInfo, FProcessInfo);
+      CloseHandle(FToken);
+    end
+    else LockWorkStation;
+  except
+  end;
+end;
+
+function TRecoThread.FGetCurrentDay: WORD;
+var
+  FSystemTime: TSystemTime;
+begin
+  GetLocalTime(FSystemTime);
+  Result := FSystemTime.wDay;
 end;
 
 end.
