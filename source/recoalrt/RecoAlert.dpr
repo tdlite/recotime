@@ -1,7 +1,7 @@
 program RecoAlert;
 
 uses
-  Windows, SysUtils, Classes, ComObj, ActiveX, IniFiles,
+  Windows, SysUtils, Classes, ComObj, ActiveX, IniFiles, Registry,
   IdSMTP, IdMessage, IdText, IdCoderHeader,
   ActiveDs_TLB, UIB;
 
@@ -46,9 +46,11 @@ type
         var AHeaderEncoding: Char; var ACharSet: string);
       procedure FRunExec;
       procedure FSendMail(AHost: string; APort: integer;
-        AUsername, APassword, AFrom, ATo, ASubject, ABody: string);      
+        AUsername, APassword, AFrom, ATo, ASubject, ABody: string);
+      procedure FSetCurrentDate(ANow: TDateTime);
       procedure FWriteLog(AMessage: string);
       function FCheckTime(AStrTime: string): Boolean;
+      function FGetCurrentDate: TDateTime;
       function FGetSrvParam: TSrvParam;
       function FGetUserName: string;
       function FReplace(ATemplate: string; AUserInfo: TUserInfo): string;
@@ -68,6 +70,9 @@ const
   LIB_FILE = 'fbclient.dll';
   LOG_FILE = 'recoalrt.log';
 
+  REG_ROOTKEY = 'SOFTWARE\RecoTime\Main';
+  REG_ENTRYTIME = 'EntryTime';
+
 { TRecoAlrt }
 
 procedure TRecoAlrt.DoEvent;
@@ -82,6 +87,7 @@ var
   FSrvData: TSrvData;
   FMsgData: TMsgData;
   FUserInfo: TUserInfo;
+  FEntryTime: TDateTime;
   FIsExistEntry: Boolean;
 begin
   try
@@ -130,16 +136,18 @@ begin
     { CHECK_ENABLED }
     if (not FUserInfo.Enabled) then Exit;
     { CHECK_ENTRY }
+    FEntryTime := FGetCurrentDate;
     FUIBQuery.BuildStoredProc('CHECK_ENTRY', False);
     FUIBQuery.Params.ByNameAsInteger['userid'] := FUserInfo.UserID;
-    FUIBQuery.Params.ByNameAsDateTime['eventtime'] := Now;
+    FUIBQuery.Params.ByNameAsDateTime['eventtime'] := FEntryTime;
     FUIBQuery.Execute;
     FIsExistEntry := FUIBQuery.Fields.ByNameAsBoolean['exist'];
     FUIBQuery.Close(etmCommit);
     { AFTER TIME }
-    if ((Time > StrToTime(FUserInfo.WorkTime)) and (not FIsExistEntry)) then
+    if ((Frac(FEntryTime) > StrToTime(FUserInfo.WorkTime)) and
+    (not FIsExistEntry)) then
     begin
-      { RUNEXEC }    
+      { RUNEXEC }
       FRunExec;
       { PARAMID 0 }
       FStream := TMemoryStream.Create;
@@ -173,7 +181,10 @@ begin
     FUIBDatabase.Free;
   except
     on E: Exception do
-    FWriteLog(E.Message);
+    begin
+      FSetCurrentDate(Now);
+      FWriteLog(E.Message);
+    end;
   end;
   FADUserInfo := nil;
   FADSystemInfo := nil;
@@ -246,6 +257,25 @@ begin
   end;
 end;
 
+procedure TRecoAlrt.FSetCurrentDate(ANow: TDateTime);
+var
+  FRegistry: TRegistry;
+begin
+  try
+    FRegistry := TRegistry.Create;
+    FRegistry.RootKey := HKEY_CURRENT_USER;
+    FRegistry.OpenKey(REG_ROOTKEY, True);
+    if ((not FRegistry.ValueExists(REG_ENTRYTIME)) OR
+    (Trunc(FRegistry.ReadDateTime(REG_ENTRYTIME)) <> Trunc(Now))) then
+    begin
+      FRegistry.WriteDateTime(REG_ENTRYTIME, ANow);
+    end;
+    FRegistry.CloseKey;
+    FRegistry.Free;
+  except
+  end;
+end;
+
 procedure TRecoAlrt.FWriteLog(AMessage: string);
 var
   FFileHandle: TextFile;
@@ -267,6 +297,29 @@ var
   FTime: TDateTime;
 begin
   Result := TryStrToTime(AStrTime, FTime);
+end;
+
+function TRecoAlrt.FGetCurrentDate: TDateTime;
+var
+  FRegistry: TRegistry;
+  FEntryTime: TDateTime;
+begin
+  Result := Now;
+  try
+    FRegistry := TRegistry.Create;
+    FRegistry.RootKey := HKEY_CURRENT_USER;
+    FRegistry.OpenKey(REG_ROOTKEY, True);
+    if (FRegistry.ValueExists(REG_ENTRYTIME)) then
+    begin
+      FEntryTime := FRegistry.ReadDateTime(REG_ENTRYTIME);
+      if (Trunc(FEntryTime) = Trunc(Now)) then
+      Result := FEntryTime;
+      FRegistry.DeleteValue(REG_ENTRYTIME);
+    end;
+    FRegistry.CloseKey;
+    FRegistry.Free;
+  except
+  end;
 end;
 
 function TRecoAlrt.FGetSrvParam: TSrvParam;

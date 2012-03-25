@@ -1,11 +1,13 @@
 <?xml version='1.0'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product Id='*' Name='RecoTime'
-    Language='1033' Version='0.3.57' Manufacturer='Renaissance Insurance'
+    Language='1033' Version='0.3.58' Manufacturer='Renaissance Insurance'
     UpgradeCode='BBB997AA-B468-4F0D-817E-0AB13F4B732F'>
-  <Package Description='RecoTime Installer' Manufacturer='Renaissance Insurance'
-    InstallerVersion='200' Languages='1033' Compressed='yes' />
-  <Media Id='1' Cabinet='data.cab' EmbedCab='yes' />
+    <Package Description='RecoTime Installer' Manufacturer='Renaissance Insurance'
+      InstallerVersion='200' Languages='1033' Compressed='yes' />
+    <Media Id='1' Cabinet='data.cab' EmbedCab='yes' />
+    <MajorUpgrade
+      DowngradeErrorMessage = "A later version of RecoTime is already installed. Setup will now exit.">  
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='SystemFolder' Name='System32'>
         <Directory Id='RecoTimeFolder' Name='recotime'>
