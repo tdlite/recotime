@@ -7,7 +7,7 @@
       InstallerVersion='200' Languages='1033' Compressed='yes' />
     <Media Id='1' Cabinet='data.cab' EmbedCab='yes' />
     <MajorUpgrade
-      DowngradeErrorMessage = "A later version of RecoTime is already installed. Setup will now exit.">  
+      DowngradeErrorMessage = "A later version of RecoTime is already installed. Setup will now exit." />  
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='SystemFolder' Name='System32'>
         <Directory Id='RecoTimeFolder' Name='recotime'>
